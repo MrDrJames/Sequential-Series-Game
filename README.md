@@ -1,0 +1,1 @@
+A simple merge game. Click two squares to merge identical items and earn money based on how many times they've been merged and use that money for expanding the grid. You can figure the rest out, it's not that complex.
