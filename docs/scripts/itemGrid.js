@@ -20,6 +20,7 @@ function resetGame(){
     //Very simple when I put in default values
     localStorage.clear()
     window.onload()
+    window.location.reload()
 }
 window.onbeforeunload = function(event){
     localStorage.setItem("money",money)
@@ -45,8 +46,8 @@ function getGrid(){
 }
 window.onload = function(event){
     itemGrid = document.getElementById("item-grid");
-    boughtSort = localStorage.getItem("boughtSort") || false
-    if(boughtSort){
+    boughtSort = localStorage.getItem("boughtSort") == 'true'
+    if(boughtSort == true){
         let button = document.getElementById("sortGrid");
         button.parentNode.childNodes[1].remove()
         button.parentNode.childNodes[1].remove()
