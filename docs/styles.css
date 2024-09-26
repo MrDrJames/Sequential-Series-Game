@@ -102,7 +102,12 @@ body {
 #left-panel, #right-panel {
     height: 100vh;
 }
-
+#reset{
+    position: absolute;
+    bottom: 0;
+    right:20px;
+    background-color: red;
+}
 /* Header */
 header {
     position: absolute;

@@ -28,9 +28,11 @@
     <!-- Right Panel (Upgrades) -->
     <div id="right-panel">
         <h2>Upgrades</h2>
-        <p><button id="upgradeWidth">Upgrade Width</button>Cost: <span id="widthCost">10</span></p>
-        <p><button id="upgradeHeight">Upgrade Height</button>Cost: <span id="heightCost">10</span></p>
-        <p><button id="sortGrid">Sort Grid</button>Cost: <span id="sortCost">20</span></p>
+        <p><button onclick="buyItem()" id="createItem">Create Item</button> Cost: <span>1</span></p>
+        <p><button onclick="buyUpgrade('width')" id="upgradeWidth"> Upgrade Width</button>Cost: <span id="widthCost">10</span></p>
+        <p><button onclick="buyUpgrade('height')" id="upgradeHeight"> Upgrade Height</button>Cost: <span id="heightCost">10</span></p>
+        <p><button id="sortGrid">Sort Grid</button> Cost: <span id="sortCost">20</span></p>
+        <button onclick="resetGame()" id="reset">Reset Game</button>
     </div>
     <script src="scripts/itemGrid.js"></script>
 </body>
