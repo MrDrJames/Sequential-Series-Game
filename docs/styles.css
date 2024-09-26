@@ -33,6 +33,7 @@ body {
     justify-content: center;
     align-items: center;
     background-color: #252526;
+    padding: 10%;
     overflow: hidden; /* Prevent overflow */
 }
 
@@ -41,6 +42,7 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive columns */
     grid-auto-rows: 100px; /* Fixed row height */
     gap: 10px;
+    padding: 10%;
     max-width: 100%; /* Prevent overflow */
     justify-content: center;
     align-items: center;
@@ -59,6 +61,8 @@ body {
     font-weight: bold;
     color: #d4d4d4;
     cursor: pointer;
+    text-shadow: 1px 1px black;
+    font-size: 250%;
     transition: transform 0.2s, background-color 0.2s;
     box-sizing: border-box; /* Include padding and border in width/height */
 }

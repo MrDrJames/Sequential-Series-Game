@@ -109,6 +109,10 @@ function createItemSlot(ser, val) {
     itemSlot.style.backgroundColor = unselectedColor;
     itemSlot.onclick = function () {
         //Merge Calculations
+        //No reason to click on empty tiles so don't allow it
+        if(itemSlot.innerText == ''){
+            return;
+        }
         if (selected == null) {
             selected = itemSlot;
             itemSlot.style.backgroundColor = itemSlot.style.backgroundColor == unselectedColor ? selectedColor : unselectedColor;
@@ -146,6 +150,7 @@ function addMoney(value){
     money += value;
     document.getElementById('money').innerText = money
 }
+//#TODO Change cost of each upgrade to be based on both upgrades, because going upgrading height on 3x3 and 4x3 is a different number of squares 
 function buyUpgrade(name){
     let cost = Math.floor(10 * 1.5 ** ((name == 'width'?gridWidth:gridHeight)-3))
     if(money > cost){
@@ -155,6 +160,7 @@ function buyUpgrade(name){
         resizeGrid();
     }
 }
+//#TODO After a certain grid size, turn this into create max
 function buyItem(){
     if(money<1){
         return;
