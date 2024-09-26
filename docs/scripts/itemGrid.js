@@ -12,7 +12,7 @@ const alphabet = ["A","B","C","D","E","F","G","H","I","J"]
 const greek = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ"]
 const series = [romanNumerals,alphabet,greek]
 const colors = ["red","blue","yellow"]
-const unselectedColor = 'grey'
+const unselectedColor = 'silver'
 const selectedColor = 'teal'
 let boughtSort = false;
 let itemGrid;
@@ -90,8 +90,6 @@ function resizeGrid () {
     itemGrid.style.gridTemplateColumns = `repeat(${ gridWidth }, ${ Math.min(itemWidth, itemHeight) }px)`;
     itemGrid.style.gridTemplateRows = `repeat(${ gridHeight }, ${ Math.min(itemWidth, itemHeight) }px)`;
 
-    // Clear and add items #TODO don't clear, just add
-    // grid.innerHTML = ''; // Clear existing slots
     for (let i = itemGrid.childElementCount; i < gridWidth * gridHeight; i++) {
         let itemSlot = createItemSlot();
         itemGrid.appendChild(itemSlot);
@@ -175,7 +173,6 @@ function updateUpgrade(name){
 }
 document.getElementById("sortGrid").onclick = clickSort;
 function clickSort() {
-    // #TODO Make it so you have to buy this first then remove the cost text
     if(!boughtSort){
         if(money <= 20)
             return
