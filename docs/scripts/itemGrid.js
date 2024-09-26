@@ -1,53 +1,55 @@
 // @ts-nocheck I like doing weird things in js, vscode does not
 Array.prototype.random = function () {
-    return this[Math.floor((Math.random()*this.length))];
+    return this[Math.floor((Math.random() * this.length))];
 }
 let gridWidth = 3;
 let gridHeight = 3;
 let maxGridSize = 18;
 let selected;
-let money =0;
+let money = 0;
 const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-const alphabet = ["A","B","C","D","E","F","G","H","I","J"]
+const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 const greek = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ"]
-const series = [romanNumerals,alphabet,greek]
-const colors = ["red","blue","yellow"]
+const series = [romanNumerals, alphabet, greek]
+const colors = ["red", "blue", "yellow"]
 const unselectedColor = 'silver'
 const selectedColor = 'teal'
 let boughtSort = false;
 let itemGrid;
-function resetGame(){
+let buyMax = false
+function resetGame () {
     //Very simple when I put in default values
     localStorage.clear()
     window.onload()
     window.location.reload()
 }
-window.onbeforeunload = function(event){
-    localStorage.setItem("money",money)
-    localStorage.setItem("boughtSort",boughtSort)
-    localStorage.setItem("gridWidth",gridWidth)
-    localStorage.setItem("gridHeight",gridHeight)
-    localStorage.setItem("itemGrid",getGrid())
+window.onbeforeunload = function (event) {
+    localStorage.setItem("money", money)
+    localStorage.setItem("boughtSort", boughtSort)
+    localStorage.setItem("gridWidth", gridWidth)
+    localStorage.setItem("gridHeight", gridHeight)
+    localStorage.setItem("buyMax", buyMax)
+    localStorage.setItem("itemGrid", getGrid())
 }
 // Gets the itemgrid as a string for storage doesn't need to be a function but it is
-function getGrid(){
+function getGrid () {
     let out = "";
-    Array.from(itemGrid.children).forEach((node)=>{
-        if(node.innerText != ""){
+    Array.from(itemGrid.children).forEach((node) => {
+        if (node.innerText != "") {
             let ser = colors.indexOf(node.style.color)
             let value = series[ser].indexOf(node.innerText)
             out += ser + " " + value + ","
-        }else{
+        } else {
             out += -1 + " " + -1 + ","
 
         }
     })
-    return out.slice(0,out.length-1)
+    return out.slice(0, out.length - 1)
 }
-window.onload = function(event){
+window.onload = function (event) {
     itemGrid = document.getElementById("item-grid");
     boughtSort = localStorage.getItem("boughtSort") == 'true'
-    if(boughtSort == true){
+    if (boughtSort == true) {
         let button = document.getElementById("sortGrid");
         button.parentNode.childNodes[1].remove()
         button.parentNode.childNodes[1].remove()
@@ -56,13 +58,18 @@ window.onload = function(event){
     document.getElementById('money').innerText = money
     gridWidth = localStorage.getItem("gridWidth") || 3
     gridHeight = localStorage.getItem("gridHeight") || 3
-    updateUpgrade('width')
-    updateUpgrade('height')
-    itemGrid.innerHTML =""
-    let data = localStorage.getItem("itemGrid")  || '0 0'
-    data.split(",").forEach((item)=>{
+    buyMax = localStorage.getItem("buyMax") == 'true'
+    if (buyMax) {
+        let button = document.getElementById('createItem');
+        button.innerText = 'Create Max'
+        button.parentElement.children[1].innerText = '1 Each'
+    }
+    updateUpgrades()
+    itemGrid.innerHTML = ""
+    let data = localStorage.getItem("itemGrid") || '0 0'
+    data.split(",").forEach((item) => {
         let itemData = item.split(" ")
-        itemGrid.appendChild(createItemSlot(itemData[0],itemData[1]))
+        itemGrid.appendChild(createItemSlot(itemData[0], itemData[1]))
     })
     resizeGrid()
 }
@@ -81,7 +88,7 @@ function resizeGrid () {
         document.getElementById("upgradeHeight").disabled = true;
         return;
     }
-    if (itemWidth < minItemSize|| gridWidth > maxGridSize) {
+    if (itemWidth < minItemSize || gridWidth > maxGridSize) {
         gridWidth--;
         document.getElementById("upgradeWidth").disabled = true;
         return;
@@ -96,13 +103,13 @@ function resizeGrid () {
     }
     document.getElementById("gridSize").textContent = `${ gridWidth }x${ gridHeight }`
 }
-function createItemSlot(ser, val) {
+function createItemSlot (ser, val) {
     let itemSlot = document.createElement('div');
     itemSlot.className = 'item-slot';
     //A nice little random filling when you expand the grid
-    if(ser != -1){
+    if (ser != -1) {
         let inputSeries = ser == null ? Math.floor(Math.random() * series.length) : ser;
-        itemSlot.innerText = series[inputSeries][val==null ? 0:val];
+        itemSlot.innerText = series[inputSeries][val == null ? 0 : val];
         itemSlot.style.color = colors[inputSeries];
     }
 
@@ -110,7 +117,7 @@ function createItemSlot(ser, val) {
     itemSlot.onclick = function () {
         //Merge Calculations
         //No reason to click on empty tiles so don't allow it
-        if(itemSlot.innerText == ''){
+        if (itemSlot.innerText == '') {
             return;
         }
         if (selected == null) {
@@ -135,52 +142,71 @@ function createItemSlot(ser, val) {
     return itemSlot;
 }
 
-function getMergeResult(one, two){
-    if(one.innerText == two.innerText){
-        let matchedSeries = colors.findIndex((val) => val == one.style.color); 
-        let index = series[matchedSeries].findIndex((val) => val == one.innerText); 
-        if(index == 9){
+function getMergeResult (one, two) {
+    if (one.innerText == two.innerText) {
+        let matchedSeries = colors.findIndex((val) => val == one.style.color);
+        let index = series[matchedSeries].findIndex((val) => val == one.innerText);
+        if (index == 9) {
             //#TODO what do when out of merges
             throw new Error("PANIC")
         }
-        return {newSeries: matchedSeries,value: index+1}
+        return {newSeries: matchedSeries, value: index + 1}
     }
 }
-function addMoney(value){
+function addMoney (value) {
     money += value;
     document.getElementById('money').innerText = money
 }
-//#TODO Change cost of each upgrade to be based on both upgrades, because going upgrading height on 3x3 and 4x3 is a different number of squares 
-function buyUpgrade(name){
-    let cost = Math.floor(10 * 1.5 ** ((name == 'width'?gridWidth:gridHeight)-3))
-    if(money > cost){
-        addMoney(cost *-1)
-        name == 'width'?gridWidth++:gridHeight++
-        document.getElementById(name+"Cost").innerText = Math.floor(cost * 1.5)
-        resizeGrid();
-    }
+function getUpgradeCost(name){
+    return Math.floor(10 * 1.5 ** (((name == 'height' ? gridHeight : gridWidth) - 3) + ((name == 'width' ? gridHeight : gridWidth) - 3) /2));
 }
-//#TODO After a certain grid size, turn this into create max
-function buyItem(){
-    if(money<1){
-        return;
-    }
-    for (let i = 0; i < itemGrid.childElementCount; i++) {
-        if(itemGrid.children[i].innerText ==""){
-            itemGrid.replaceChild(createItemSlot(),itemGrid.children[i])
-            addMoney(-1)
-            return
+//#TODO Change cost of each upgrade to be based on both upgrades, because going upgrading height on 3x3 and 4x3 is a different number of squares 
+function buyUpgrade (name) {
+    let cost = getUpgradeCost(name)
+    if (money > cost) {
+        addMoney(cost * -1)
+        name == 'width' ? gridWidth++ : gridHeight++
+        updateUpgrades()
+        resizeGrid();
+        if(gridHeight * gridWidth >= 25){
+            buyMax = true
+        }
+        if (buyMax) {
+            let button = document.getElementById('createItem');
+            button.innerText = 'Create Max'
+            button.parentElement.children[1].innerText = '1 Each'
         }
     }
 }
-function updateUpgrade(name){
-    let cost = Math.floor(10 * 1.5 ** ((name == 'width'?gridWidth:gridHeight)-3))
-    document.getElementById(name+"Cost").innerText = Math.floor(cost)
+//#TODO After a certain grid size, turn this into create max
+function buyItem () {
+    if (buyMax) {
+        let button = document.getElementById('createItem');
+        button.innerText = 'Create Max'
+        button.parentElement.children[1].innerText = '1 Each'
+    }
+    if (money < 1) {
+        return;
+    }
+    for (let i = 0; i < itemGrid.childElementCount; i++) {
+        if (itemGrid.children[i].innerText == "") {
+            if(money < 1)
+                break
+            addMoney(-1)
+            itemGrid.replaceChild(createItemSlot(), itemGrid.children[i])
+            if(!buyMax)
+                break
+        }
+    }
+}
+function updateUpgrades() {
+    document.getElementById ("widthCost").innerText = getUpgradeCost('width')
+    document.getElementById ("heightCost").innerText = getUpgradeCost('height')
 }
 document.getElementById("sortGrid").onclick = clickSort;
-function clickSort() {
-    if(!boughtSort){
-        if(money <= 20)
+function clickSort () {
+    if (!boughtSort) {
+        if (money <= 20)
             return
         addMoney(-20)
         let button = document.getElementById("sortGrid");
@@ -190,16 +216,16 @@ function clickSort() {
     }
     sortGrid()
 }
-function sortGrid(){
+function sortGrid () {
     const itemGrid = document.querySelector("#item-grid");
-    for(let i = 0; i < series.length;i++){
+    for (let i = 0; i < series.length; i++) {
         //Lamda functions are fun
         //In order this, gets the itemgrid as a htmlcollection, turns it into an array, filters it for each series, then sorts based on that series, then appends it to the itemgrid thus moving them to all be in order
         // Interestingly enough because I am sorting it by just moving the elements around on the page, the currently selected grid also accurately moves without me having to do anything extra
-        Array.from(itemGrid.children).filter((item)=>item.style.color == colors[i] && item.innerText != "").sort((a,b)=>series[i].indexOf(a.innerText)-series[i].indexOf(b.innerText)).forEach((item)=> itemGrid.appendChild(item))
+        Array.from(itemGrid.children).filter((item) => item.style.color == colors[i] && item.innerText != "").sort((a, b) => series[i].indexOf(a.innerText) - series[i].indexOf(b.innerText)).forEach((item) => itemGrid.appendChild(item))
     }
     // A last one for the empty spaces
-    let emptyChildren = Array.from(itemGrid.children).filter((item)=>item.innerText == "").forEach((item)=> itemGrid.appendChild(item))
+    let emptyChildren = Array.from(itemGrid.children).filter((item) => item.innerText == "").forEach((item) => itemGrid.appendChild(item))
 }
 
 
