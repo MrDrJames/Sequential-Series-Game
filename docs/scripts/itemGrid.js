@@ -11,7 +11,7 @@ const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "
 const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 const greek = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ"]
 const series = [romanNumerals, alphabet, greek]
-const colors = ["red", "blue", "yellow"]
+const colors = ["red", "blue", "yellow",'purple','green','orange']
 const unselectedColor = 'silver'
 const selectedColor = 'teal'
 let boughtSort = false;
@@ -36,8 +36,8 @@ function getGrid () {
     let out = "";
     Array.from(itemGrid.children).forEach((node) => {
         if (node.innerText != "") {
-            let ser = colors.indexOf(node.style.color)
-            let value = series[ser].indexOf(node.innerText)
+            let ser = node.color;
+            let value = node.value;
             out += ser + " " + value + ","
         } else {
             out += -1 + " " + -1 + ","
@@ -103,14 +103,40 @@ function resizeGrid () {
     }
     document.getElementById("gridSize").textContent = `${ gridWidth }x${ gridHeight }`
 }
+function sellItem(){
+    if(selected != null){
+        addMoney(Math.pow(2, selected.value) * (selected.color > 2 ? 2:1));
+        itemGrid.replaceChild(createItemSlot(-1,-1),selected)
+        document.getElementById("itemCost").innerText = ""
+        selected = null;
+    }
+}
 function createItemSlot (ser, val) {
     let itemSlot = document.createElement('div');
     itemSlot.className = 'item-slot';
     //A nice little random filling when you expand the grid
     if (ser != -1) {
         let inputSeries = ser == null ? Math.floor(Math.random() * series.length) : ser;
-        itemSlot.innerText = series[inputSeries][val == null ? 0 : val];
+        if(ser > 2){
+            if(ser == 3){
+                itemSlot.innerText = series[0][val];
+                itemSlot.innerText += series[1][val];
+            }
+            if(ser == 4){
+                itemSlot.innerText = series[1][val];
+                itemSlot.innerText += series[2][val];
+            }
+            if(ser == 5){
+                itemSlot.innerText = series[0][val];
+                itemSlot.innerText += series[2][val];
+            }
+        }else{
+            // itemSlot.innerText = series[result.newSeries][result.value];
+            itemSlot.innerText = series[inputSeries][val == null ? 0 : val];
+        }
         itemSlot.style.color = colors[inputSeries];
+        itemSlot.color = parseInt(inputSeries);
+        itemSlot.value = parseInt(val == null ? 0 : val);
     }
 
     itemSlot.style.backgroundColor = unselectedColor;
@@ -123,34 +149,51 @@ function createItemSlot (ser, val) {
         if (selected == null) {
             selected = itemSlot;
             itemSlot.style.backgroundColor = itemSlot.style.backgroundColor == unselectedColor ? selectedColor : unselectedColor;
+            document.getElementById("itemCost").innerText = Math.pow(2, itemSlot.value) * (itemSlot.color > 2 ? 2:1)
             return;
         } else if (itemSlot == selected) {
             selected = null;
             itemSlot.style.backgroundColor = itemSlot.style.backgroundColor == unselectedColor ? selectedColor : unselectedColor;
+            document.getElementById("itemCost").innerText = ""
             return;
         }
-        if (itemSlot.innerText == selected.innerText) {
+        if (itemSlot.value == selected.value && (selected.color <3 && itemSlot.color < 3) ) {
             let result = getMergeResult(itemSlot, selected);
-            selected.innerText = "";
-            selected.style.backgroundColor = unselectedColor;
-            itemSlot.innerText = series[result.newSeries][result.value];
-            itemSlot.color = colors[result.newSeries];
+            itemGrid.replaceChild(createItemSlot(-1,-1),selected)
+            itemGrid.replaceChild(createItemSlot(result.newSeries,result.value),itemSlot)
             selected = null;
-            addMoney(Math.pow(2, result.value + 1));
+            document.getElementById("itemCost").innerText = ""
+            addMoney(Math.pow(2, result.value + 1) * result.newSeries > 2 ? 2:1);
         }
+        
     };
     return itemSlot;
 }
 
 function getMergeResult (one, two) {
-    if (one.innerText == two.innerText) {
-        let matchedSeries = colors.findIndex((val) => val == one.style.color);
-        let index = series[matchedSeries].findIndex((val) => val == one.innerText);
-        if (index == 9) {
+    if (one.value == two.value) {
+        let matchedSeries = one.color;
+        if (one.value == 9) {
             //#TODO what do when out of merges
             throw new Error("PANIC")
         }
-        return {newSeries: matchedSeries, value: index + 1}
+        // #TODO can clean this up now with one.color being just the number
+        if(one.style.color != two.style.color){
+            let red = one.style.color == colors[0] || two.style.color == colors[0];
+            let blue = one.style.color == colors[1] || two.style.color == colors[1];
+            let yellow = one.style.color == colors[2] || two.style.color == colors[2];
+            if(red && blue){
+                matchedSeries = 3;//Purple
+            }
+            if(blue && yellow){
+                matchedSeries = 4;//Green
+            }
+            if(red && yellow){
+                matchedSeries = 5;//Orange
+            }
+            return {newSeries: matchedSeries, value: one.value}
+        }
+        return {newSeries: matchedSeries, value: one.value + 1}
     }
 }
 function addMoney (value) {
