@@ -13,8 +13,11 @@
     <!-- Left Panel (Stats) -->
     <div id="left-panel">
         <h2>Stats</h2>
+        <p>Current Order: <span id="orderDisplay"></span></p>
         <p>Grid Size: <span id="gridSize">2x2</span></p>
+        <p>Completed Orders: <span id="orderCount">0</span></p>
         <p>Money: <span id="money">0</span></p>
+        <p>Crystals: <span id="crystal">0</span></p>
     </div>
     
     <!-- Middle Panel (Item Grid) -->
@@ -27,12 +30,12 @@
     <!-- Right Panel (Upgrades) -->
     <div id="right-panel">
         <h2>Item Stock</h2>
-        <p><button onclick="buyItem()" id="createItem">Create Item</button> Cost: <span>1</span></p>
+        <p><button onclick="buyItem()" id="createItem">Create Item</button> Cost: $<span>1</span></p>
         <p><button onclick="sellItem()" id ="sellItem">Sell Item</button><span id="itemCost"></span></p>
         <h2>Upgrades</h2>
-        <p><button onclick="buyUpgrade('width')" id="upgradeWidth"> Upgrade Width</button>Cost: <span id="widthCost">10</span></p>
-        <p><button onclick="buyUpgrade('height')" id="upgradeHeight"> Upgrade Height</button>Cost: <span id="heightCost">10</span></p>
-        <p><button id="sortGrid">Sort Grid</button> One Time Cost: <span id="sortCost">20</span></p>
+        <p><button onclick="buyUpgrade('width')" id="upgradeWidth">Upgrade Width</button> Cost: $<span id="widthCost">10</span></p>
+        <p><button onclick="buyUpgrade('height')" id="upgradeHeight">Upgrade Height</button> Cost: $<span id="heightCost">10</span></p>
+        <p><button onclick="clickSort()" id="sortGrid">Sort Grid</button> One Time Cost: <span id="sortCost">20 Crystals</span></p>
         <button onclick="resetGame()" id="reset">Reset Game</button>
     </div>
     <script src="scripts/itemGrid.js"></script>
