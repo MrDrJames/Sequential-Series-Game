@@ -29,7 +29,7 @@ function resetGame () {
 window.onbeforeunload = function (event) {
     localStorage.setItem("money", money)
     localStorage.setItem("crystal", crystal)
-    localStorage.setItem("orderCount",completedOrders);
+    localStorage.setItem("orderCount", completedOrders);
     localStorage.setItem("boughtSort", boughtSort)
     localStorage.setItem("gridWidth", gridWidth)
     localStorage.setItem("gridHeight", gridHeight)
@@ -64,7 +64,7 @@ window.onload = function (event) {
     document.getElementById('money').innerText = money
     crystal = parseInt(localStorage.getItem("crystal")) || 0
     document.getElementById('crystal').innerText = crystal
-    completedOrders = parseInt(localStorage.getItem("orderCount"))|| 0;
+    completedOrders = parseInt(localStorage.getItem("orderCount")) || 0;
     document.getElementById('orderCount').innerText = completedOrders;
     gridWidth = localStorage.getItem("gridWidth") || 3
     gridHeight = localStorage.getItem("gridHeight") || 3
@@ -82,11 +82,11 @@ window.onload = function (event) {
         itemGrid.appendChild(createItemSlot(itemData[0], itemData[1]))
     })
     let recoverOrder = localStorage.getItem("currentOrder");
-    if(recoverOrder == null){
+    if (recoverOrder == null) {
         createOrder();
-    }else{
+    } else {
         recoverOrder = recoverOrder.split(" ");
-        createOrder(recoverOrder[0],recoverOrder[1])
+        createOrder(recoverOrder[0], recoverOrder[1])
     }
     resizeGrid()
 }
@@ -122,12 +122,12 @@ function resizeGrid () {
 }
 function sellItem () {
     if (selected != null) {
-        if(selected.value == order.value && order.color == selected.color){
-            addCrystal(Math.pow(2, selected.value) *(2));
+        if (selected.value == order.value && order.color == selected.color) {
+            addCrystal(Math.pow(2, selected.value) * (2));
             completedOrders++;
             document.getElementById("orderCount").innerText = completedOrders;
             createOrder();
-        }else{
+        } else {
             addMoney(Math.pow(2, selected.value) * (selected.color > 2 ? 2 : 1));
         }
         selected.replaceWith(createItemSlot(-1, -1))
@@ -138,7 +138,7 @@ function sellItem () {
 function createOrder (col = -1, val = -1) {
     let targetColor = col == -1 ? Math.floor(Math.random() * 3) + 3 : col;
     let maxValue = val;
-    if(val == -1){
+    if (val == -1) {
         maxValue = Array.from(itemGrid.children).filter((node) => node.value >= 0).reduce(function (prev, current) {return (prev && current.value && prev.value > current.value) ? prev : current}).value;
         if (maxValue < 9) {
             maxValue += Math.floor(Math.random(2))
@@ -194,10 +194,10 @@ function createItemSlot (ser, val) {
         if (selected == null) {
             selected = itemSlot;
             itemSlot.style.backgroundColor = itemSlot.style.backgroundColor == unselectedColor ? selectedColor : unselectedColor;
-            if(selected.value == order.value && selected.color == order.color){
+            if (selected.value == order.value && selected.color == order.color) {
                 document.getElementById("itemCost").innerText = Math.pow(2, itemSlot.value) * 2 + " Crystals"
-            }else{
-                document.getElementById("itemCost").innerText = "$" +Math.pow(2, itemSlot.value) * (itemSlot.color > 2 ? 2 : 1)
+            } else {
+                document.getElementById("itemCost").innerText = "$" + Math.pow(2, itemSlot.value) * (itemSlot.color > 2 ? 2 : 1)
             }
             return;
         } else if (itemSlot == selected) {
